@@ -1,0 +1,28 @@
+apply plugin: 'groovy'
+
+task(delegateBuild) {
+    doLast {
+        boolean androidChanged
+        boolean iosChanged
+        boolean webChanged
+        boolean otherChanged
+
+        String[] filesChanged = 'git diff --name-only master..android_pr'.execute().text.split('\n')
+        for (String filePath : filesChanged) {
+            if (filePath.startsWith('android/')) {
+                androidChanged = true;
+            } else if (filePath.startsWith('ios/')) {
+                iosChanged = true;
+            } else if (filePath.startsWith('web/')) {
+                webChanged = true;
+            } else {
+                otherChanged = true;
+            }
+            println(filePath)
+            println('androidChanged ' + androidChanged)
+            println('iosChanged ' + iosChanged)
+            println('webChanged ' + webChanged)
+            println('otherChanged ' + otherChanged)
+        }
+    }
+}
