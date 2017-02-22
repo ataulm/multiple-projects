@@ -2,13 +2,18 @@ apply plugin: 'groovy'
 
 task(delegateBuild) {
     doLast {
+        String filesChanged = "git diff --name-only $targetBranch..$sourceBranch".execute().text.trim()
+        if (filesChanged.isEmpty()) {
+            println('no changes, you can\'t make me build!')
+            return
+        }
+
         boolean androidChanged
         boolean iosChanged
         boolean webChanged
         boolean otherChanged
 
-        String[] filesChanged = 'git diff --name-only master..android_pr'.execute().text.split('\n')
-        for (String filePath : filesChanged) {
+        for (String filePath : filesChanged.split('\n')) {
             if (filePath.startsWith('android/')) {
                 androidChanged = true;
             } else if (filePath.startsWith('ios/')) {
@@ -18,11 +23,11 @@ task(delegateBuild) {
             } else {
                 otherChanged = true;
             }
-            println(filePath)
-            println('androidChanged ' + androidChanged)
-            println('iosChanged ' + iosChanged)
-            println('webChanged ' + webChanged)
-            println('otherChanged ' + otherChanged)
         }
+
+        println('androidChanged ' + androidChanged)
+        println('iosChanged ' + iosChanged)
+        println('webChanged ' + webChanged)
+        println('otherChanged ' + otherChanged)
     }
 }
